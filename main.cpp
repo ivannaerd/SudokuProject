@@ -37,8 +37,27 @@ class Sudoku{
 int main()
 {
     Sudoku sudoku;
-    sudoku.load_board("data/easy_solution.txt", sudoku.solution);
-    sudoku.load_board("data/easy_board.txt", sudoku.board);
+
+    cout << "choose level and type E-easy, M-medium, H-hard" << '\n';
+    char l;
+    cin >> l;
+    if(l == 'E')
+    {
+        sudoku.load_board("data/easy_solution.txt", sudoku.solution);
+        sudoku.load_board("data/easy_board.txt", sudoku.board);
+    }
+    else if(l == 'M')
+    {
+        sudoku.load_board("data/medium_solution.txt", sudoku.solution);
+        sudoku.load_board("data/medium_board.txt", sudoku.board);
+    }
+    else if(l == 'H')
+    {
+        sudoku.load_board("data/hard_solution.txt", sudoku.solution);
+        sudoku.load_board("data/hard_board.txt", sudoku.board);
+    }
+    else
+        cout << "level doesn't exist";
 
     sudoku.display();
 }
