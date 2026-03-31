@@ -20,12 +20,16 @@ class Sudoku{
         {
             for(int i = 0; i < 9; i++)
             {
+                if(i % 3 == 0 && i != 0)
+                    cout<< "-------+-------+------" << '\n';
                 for(int j = 0; j < 9; j++)
                 {
+                    if(j % 3 == 0 && j != 0)
+                        cout<<"| ";
                     if(board[i][j]== 0)
-                        cout << "*";
+                        cout << "* ";
                     else
-                        cout<< board[i][j];
+                        cout<< board[i][j] <<" ";
                 }
                 //po jednej linjce przeskakujemy w dol
                 cout << "\n";
