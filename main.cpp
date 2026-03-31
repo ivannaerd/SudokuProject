@@ -35,6 +35,29 @@ class Sudoku{
                 cout << "\n";
             }
         }
+        int mistakes = 0;
+        void check_ans(int row, int col, int guess)
+        {
+            if(solution[row][col] == guess)
+            {
+                board[row][col] = guess;
+                cout<< "great guess" << '\n';
+            }
+            else
+            {
+                mistakes++;
+                cout<< "wrong";
+                cout<<" mistakes "<< mistakes<< '\n';
+                
+            }
+        }
+        bool finish(){
+            for(int i = 0; i < 9; i++)
+                for(int j = 0; j < 9; j++)
+                    if(board[i][j] == 0)
+                        return false;
+            return true;
+        }
 
 };
 
@@ -63,5 +86,27 @@ int main()
     else
         cout << "level doesn't exist";
 
-    sudoku.display();
+    
+    while(sudoku.mistakes < 3)
+    {
+        sudoku.display();
+
+        int row, col, guess;
+        cout << "write row and col number and your guess " << '\n';
+        cin >> row >> col >> guess;
+        row--;
+        col--;
+
+        sudoku.check_ans(row, col, guess);
+
+        if(sudoku.finish())
+        {
+            cout<< "you solved, congrats";
+            break;
+        }
+    }
+    if(sudoku.mistakes == 3)
+        cout<<"Game over"<<'\n';
+        
+        
 }
