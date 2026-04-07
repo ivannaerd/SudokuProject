@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <SFML/Graphics.hpp>
+
 
 using namespace std;
 
@@ -65,6 +67,35 @@ int main()
 {
     Sudoku sudoku;
 
+    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(600,600)), "Sudoku"); //okno
+    float cellSize = 600.0f / 9; 
+
+    while(window.isOpen()){
+        while(auto event = window.pollEvent()) //sprawdza czy co sie wydarzylo i zapisuje
+        {
+            if(event->is<sf::Event::Closed>()) //czy ktos kliknal x
+                window.close();
+        }
+
+        window.clear(sf::Color::White);
+
+        for(int i = 0; i <= 9; i++)
+        {
+            float thickness = (i%3 == 0) ? 3.f : 1.f;// pogrubiam co 3
+            //poziome
+            sf::RectangleShape hline(sf::Vector2f(600,thickness));
+            hline.setPosition(0.f, i * cellSize - (thickness/2));
+            hline.setFillColor(sf::Color::Black);
+            window.draw(hline);
+        
+            //pionowe
+            sf::RectangleShape vline(sf::Vector2f(thickness,600));
+            vline.setPosition(i * cellSize - (thickness/2), 0.f));
+            vline.setFillColor(sf::Color::Black);
+            window.draw(vline);
+        }
+        window.display();
+    }        
     cout << "choose level and type E-easy, M-medium, H-hard" << '\n';
     char l;
     cin >> l;
@@ -107,6 +138,8 @@ int main()
     }
     if(sudoku.mistakes == 3)
         cout<<"Game over"<<'\n';
-        
-        
+    //oprawka graficzna
+
+
 }
+
