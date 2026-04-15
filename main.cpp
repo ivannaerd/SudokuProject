@@ -45,13 +45,33 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(sf::Vector2u(600,600)), "Sudoku"); //okno
     float cellSize = 600.0f / 9; 
-
+    //zadna kratka wybrana
+    int selectedRow = -1;
+    int selectedCol = -1;
     while(window.isOpen()){
         while(auto event = window.pollEvent()) //sprawdza czy co sie wydarzylo i zapisuje
         {
             if(event->is<sf::Event::Closed>()) //czy ktos kliknal x
                 window.close();
+            if (event->is<sf::Event::MouseButtonPressed>()){
+                if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>())
+                {
+                    if (mouse->button == sf::Mouse::Button::Left)
+                    {
+                        //pobieram pozycje
+                        int x = mouse->position.x;
+                        int y = mouse->position.y;
+                        //zamieniam na kratki
+                        selectedCol = x / cellSize;
+                        selectedRow = y / cellSize;
+
+                        cout << "Row: " << selectedRow 
+                            << " Col: " << selectedCol << endl;
+                    }
+                }
+            }
         }
+
 
         window.clear(sf::Color::White);
     
@@ -69,6 +89,16 @@ int main()
             vline.setPosition(sf::Vector2f(i * cellSize - (thickness/2), 0.f));
             vline.setFillColor(sf::Color::Black);
             window.draw(vline);
+        }
+        //podswietlenie
+        if (selectedRow != -1 && selectedCol != -1){
+            sf::RectangleShape highlight(sf::Vector2f(cellSize, cellSize));
+            highlight.setPosition({
+                selectedCol * cellSize,
+                selectedRow * cellSize
+            });
+            highlight.setFillColor(sf::Color(225, 192, 203));
+            window.draw(highlight);
         }
         //wypisanie liczb
         for(int i = 0; i < 9; i++){
