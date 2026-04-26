@@ -19,16 +19,19 @@ int main()
     if(l == 'E')
     {
         sudoku.load_board("data/easy_solution.txt", sudoku.solution);
+        sudoku.load_board("data/easy_board.txt", sudoku.original);
         sudoku.load_board("data/easy_board.txt", sudoku.board);
     }
     else if(l == 'M')
     {
+        sudoku.load_board("data/medium_board.txt", sudoku.original);
         sudoku.load_board("data/medium_solution.txt", sudoku.solution);
         sudoku.load_board("data/medium_board.txt", sudoku.board);
     }
     else if(l == 'H')
     {
         sudoku.load_board("data/hard_solution.txt", sudoku.solution);
+        sudoku.load_board("data/hard_board.txt", sudoku.original);
         sudoku.load_board("data/hard_board.txt", sudoku.board);
     }
     else
@@ -62,17 +65,44 @@ int main()
                         int x = mouse->position.x;
                         int y = mouse->position.y;
                         //zamieniam na kratki
-                        selectedCol = x / cellSize;
-                        selectedRow = y / cellSize;
+                        int col = x / cellSize;
+                        int row = y / cellSize;
 
+                        //zakaz edytowania pocztakowych
+                        if(sudoku.original[row][col] != 0)
+                            continue;
+
+                        selectedCol = col;
+                        selectedRow = row;
                         cout << "Row: " << selectedRow 
                             << " Col: " << selectedCol << endl;
                     }
                 }
             }
+            //wprowadza wartosci
+            if(event->is<sf::Event::TextEntered>()){
+                const auto* text = event->getIf<sf::Event::TextEntered>(); //char
+                char c = static_cast<char>(text ->unicode); //zamieniam kod znaku na znak
+                if(c >= '1' && c <= '9'){
+                    cout<< "wpisano " << c << '\n';
+                    int val = c - '0';
+                    if(sudoku.original[selectedRow][selectedCol] == 0)
+                    {
+                        if(val == sudoku.solution[selectedRow][selectedCol]){
+                            sudoku.board[selectedRow][selectedCol] = val;
+                        }
+                        else
+                            sudoku.mistakes++;  
+                    }
+                }
+            
+            }
+            if(sudoku.mistakes == 3)
+            {
+                cout<<"Game over"<<'\n';
+                window.close();
+            }
         }
-
-
         window.clear(sf::Color::White);
     
         for(int i = 0; i <= 9; i++)
@@ -97,6 +127,7 @@ int main()
                 selectedCol * cellSize,
                 selectedRow * cellSize
             });
+            
             highlight.setFillColor(sf::Color(225, 192, 203));
             window.draw(highlight);
         }
@@ -107,10 +138,14 @@ int main()
                     sf::Text text(font);
                     text.setString(std::to_string(sudoku.board[i][j])); //konwert w tekst i ustawiam
                     text.setCharacterSize(40);
-                    text.setFillColor(sf::Color::Black);
+                    //rozny kolor
+                    if(sudoku.original[i][j] != 0)
+                        text.setFillColor(sf::Color::Black);
+                    else
+                        text.setFillColor(sf::Color::Blue);
                     //wyliczam pozycje
                     float x = j * cellSize + cellSize / 2.f - 10.f;
-                    float y = i * cellSize + cellSize / 2.f - 25.f;
+                    float y = i * cellSize + cellSize / 2.f - 20.f;
 
                     text.setPosition(sf::Vector2f(x, y));
                     window.draw(text);
@@ -121,7 +156,15 @@ int main()
         window.display();
     }       
     
-   
+}
+
+//POMYSL NA KOLEJNE
+//wyswietlac licznik mistakes i game over
+//podpowiedzi prawy klik zalezni od poziomy
+//tryb notatek
+
+
+
     // cout << "choose level and type E-easy, M-medium, H-hard" << '\n';
     // char l;
     // cin >> l;
@@ -166,6 +209,5 @@ int main()
     //     cout<<"Game over"<<'\n';
 
 
-}
 
 //wypisac liczby i sczytac wspl z myszki
