@@ -1,4 +1,3 @@
-
 #include "sudoku.h"
 #include <iostream>
 #include <fstream>
@@ -21,18 +20,21 @@ int main()
         sudoku.load_board("data/easy_solution.txt", sudoku.solution);
         sudoku.load_board("data/easy_board.txt", sudoku.original);
         sudoku.load_board("data/easy_board.txt", sudoku.board);
+        sudoku.maxhints = 3;
     }
     else if(l == 'M')
     {
         sudoku.load_board("data/medium_board.txt", sudoku.original);
         sudoku.load_board("data/medium_solution.txt", sudoku.solution);
         sudoku.load_board("data/medium_board.txt", sudoku.board);
+        sudoku.maxhints = 2;
     }
     else if(l == 'H')
     {
         sudoku.load_board("data/hard_solution.txt", sudoku.solution);
         sudoku.load_board("data/hard_board.txt", sudoku.original);
         sudoku.load_board("data/hard_board.txt", sudoku.board);
+        sudoku.maxhints = 1;
     }
     else
         cout << "level doesn't exist";
@@ -41,21 +43,28 @@ int main()
     sf::Font font;
     //font.openFromFile("font.ttf");
     //sprawdzam czy wczytal sie font, bo byl warning
+  
     if (!font.openFromFile("font.TTF"))
     {
         std::cout << "ERROR";
     }
 
-    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(600,600)), "Sudoku"); //okno
+    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(600,650)), "Sudoku"); //okno
     float cellSize = 600.0f / 9; 
     //zadna kratka wybrana
     int selectedRow = -1;
     int selectedCol = -1;
+
+    bool gameOver = false;
+
     while(window.isOpen()){
         while(auto event = window.pollEvent()) //sprawdza czy co sie wydarzylo i zapisuje
         {
+        
             if(event->is<sf::Event::Closed>()) //czy ktos kliknal x
                 window.close();
+            if(gameOver)
+                continue;
             if (event->is<sf::Event::MouseButtonPressed>()){
                 if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>())
                 {
@@ -76,6 +85,25 @@ int main()
                         selectedRow = row;
                         cout << "Row: " << selectedRow 
                             << " Col: " << selectedCol << endl;
+                    }
+                    if (mouse->button == sf::Mouse::Button::Right)
+                    {
+                        //pobieram pozycje
+                        int x = mouse->position.x;
+                        int y = mouse->position.y;
+                        //zamieniam na kratki
+                        int col = x / cellSize;
+                        int row = y / cellSize;
+
+                        if(sudoku.hints >= sudoku.maxhints){
+                            cout << "no more hints" << endl;
+                            continue;
+                        }
+
+                        if(sudoku.original[row][col] == 0){
+                            sudoku.board[row][col] = sudoku.solution[row][col];
+                            sudoku.hints++;
+                        }
                     }
                 }
             }
@@ -99,8 +127,9 @@ int main()
             }
             if(sudoku.mistakes == 3)
             {
-                cout<<"Game over"<<'\n';
-                window.close();
+                // cout<<"Game over"<<'\n';
+                // window.close();
+                gameOver = true;
             }
         }
         window.clear(sf::Color::White);
@@ -153,61 +182,28 @@ int main()
 
             }
         }
+        sf::Text mistakes(font);
+        mistakes.setString("Mistakes: " + std::to_string(sudoku.mistakes) + "/3");
+        mistakes.setCharacterSize(25);
+        mistakes.setFillColor(sf::Color::Red);
+        mistakes.setPosition(sf::Vector2f(10.f, 610.f));
+        window.draw(mistakes);
+
+        //game over
+        if(gameOver)
+        {
+            sf::Text gameover(font);
+            gameover.setString("GAME OVER");
+            gameover.setCharacterSize(60);
+            gameover.setFillColor(sf::Color::Red);
+            gameover.setPosition(sf::Vector2f(140.f, 250.f));
+
+            window.draw(gameover);
+        }
         window.display();
-    }       
+        }       
     
 }
 
 //POMYSL NA KOLEJNE
-//wyswietlac licznik mistakes i game over
-//podpowiedzi prawy klik zalezni od poziomy
 //tryb notatek
-
-
-
-    // cout << "choose level and type E-easy, M-medium, H-hard" << '\n';
-    // char l;
-    // cin >> l;
-    // if(l == 'E')
-    // {
-    //     sudoku.load_board("data/easy_solution.txt", sudoku.solution);
-    //     sudoku.load_board("data/easy_board.txt", sudoku.board);
-    // }
-    // else if(l == 'M')
-    // {
-    //     sudoku.load_board("data/medium_solution.txt", sudoku.solution);
-    //     sudoku.load_board("data/medium_board.txt", sudoku.board);
-    // }
-    // else if(l == 'H')
-    // {
-    //     sudoku.load_board("data/hard_solution.txt", sudoku.solution);
-    //     sudoku.load_board("data/hard_board.txt", sudoku.board);
-    // }
-    // else
-    //     cout << "level doesn't exist";
-
-    
-    // while(sudoku.mistakes < 3)
-    // {
-    //     sudoku.display();
-
-    //     int row, col, guess;
-    //     cout << "write row and col number and your guess " << '\n';
-    //     cin >> row >> col >> guess;
-    //     row--;
-    //     col--;
-
-    //     sudoku.check_ans(row, col, guess);
-
-    //     if(sudoku.finish())
-    //     {
-    //         cout<< "you solved, congrats";
-    //         break;
-    //     }
-    // }
-    // if(sudoku.mistakes == 3)
-    //     cout<<"Game over"<<'\n';
-
-
-
-//wypisac liczby i sczytac wspl z myszki
