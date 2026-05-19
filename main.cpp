@@ -89,7 +89,7 @@ int main()
 
                         //panel
                         if(y >= panelY){
-                            if(selectedRow = -1 || selectedCol == -1){
+                            if(selectedRow == -1 || selectedCol == -1){
                                 continue;
                             }
                             int index = x/panelWidth;
@@ -344,5 +344,4 @@ int main()
     
 }
 
-//POMYSL NA KOLEJNE
-//tryb notatek
+
